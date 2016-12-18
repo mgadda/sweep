@@ -65,19 +65,19 @@ if __name__ == "__main__":
                       help="directory in which to scan for files which have not been recently used",
                       type=str)
   parser.add_argument("-a", "--age",
-                      help="the age in days after which a file is considered to be not recently used",
+                      help="the age in days after which a file is considered to be not recently used. default is 7 days",
                       type=int)
   verbose_action = parser.add_argument("-v", "--verbose",
                       help="show age of files in columnar format",
                       action='store_true')
   parser.add_argument("--newer",
-                      help="output files used more recently than cut off age",
+                      help="invert the set of files to be swept to be files used more recently than cut off age",
                       action='store_true')
   parser.add_argument("-n", "--dry-run",
                       help="dry run. do not sweep files 'under the rug'.",
                       action='store_true')
   parser.add_argument("-o", "--output-dir",
-                      help="directory into which files will be swept. defaults to ./rug",
+                      help="directory into which files will be swept. defaults to input_dir/rug",
                       dest='output_dir')
   parser.add_argument('--version', action='version', version='%(prog)s 0.1.0')
   parser.set_defaults(age=7, output_dir=None)
