@@ -30,3 +30,39 @@ optional arguments:
 Use this script with launchd, automator, cron, etc to keep your desktop
 tidy.
 
+## Requirements
+
+* Some recent version of macOS / OS X
+* Python 2.7
+
+## Installation
+
+Using launchd:
+
+1. In the `ProgramArguments` section of `com.github.mgadda.sweep.plist` shown here:
+
+      ```
+      <key>ProgramArguments</key>
+      <array>
+        <string>python</string>
+        <string>/absolute/path/to/sweep.py</string>
+      ...
+      </array>    
+      ```
+
+      specify the actual path to sweep.py
+
+2. Copy or symlink `com.github.mgadda.sweep.plist` into
+`~/Library/LaunchAgents`.
+
+      ```
+      ln -s /absolute/path/to/com.github.mgadda.sweep.plist \
+      ~/Library/LaunchAgents/com.github.mgadda.sweep.plist
+      ```
+
+3. Run `launchctl load -w ~/Library/LaunchAgents/com.github.mgadda.sweep.plist`
+
+Without further configuration launchd will look in `/bin`, `/usr/bin`,
+and `/usr/local/bin` for python.
+
+Your mileage may vary.

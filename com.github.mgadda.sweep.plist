@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.github.mgadda.sweep</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>python</string>
+		<string>/absolute/path/to/sweep.py</string>
+    <string>--verbose</string>
+    <string>-a</string>
+    <string>7</string>
+		<string>~/Desktop</string>
+	</array>
+	<key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/bin:/usr/bin:/usr/local/bin</string>
+	</dict>
+</dict>
+</plist>
