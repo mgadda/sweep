@@ -5,6 +5,7 @@ import datetime
 import operator
 import os
 import subprocess
+import sys
 from fnmatch import fnmatch
 
 import dateutil.parser
@@ -19,36 +20,75 @@ def last_used_date(filename):
     return None
 
 
-def is_older_than(age, fn=operator.gt, verbose=False):
-  def age_in_days(filename, last_used):
-    if last_used is None:
-      return False
+def age_str(age):
+    if age is None or age == sys.maxint:
+        return "Never"
+    else:
+        return str(age)
 
-    tz_info = last_used.tzinfo
 
-    now = datetime.datetime.now(tz_info)
-    delta = now - last_used
+def age_in_days(filename, last_used):
+  if last_used is None:
+    return sys.maxint # no timestamp => never accessed
 
+  tz_info = last_used.tzinfo
+
+  now = datetime.datetime.now(tz_info)
+  delta = now - last_used
+
+  return delta.days
+
+
+def is_older_than(cutoff_age, fn=operator.gt, verbose=False):
+
+  def past_cutoff(filename, last_used):
+    age = age_in_days(filename, last_used)
+    selected = fn(age, cutoff_age)
     if verbose:
-      print str(delta.days) + " days\t\t" + filename
+        if selected:
+            print in_blue(age_str(age) + "\t\t" + filename)
+        else:
+            print in_lightgray(age_str(age) + "\t\t" + filename)
 
-    return delta.days
+    return selected
 
-  return lambda filename, last_used: \
-    fn(age_in_days(filename, last_used), age)
+  return past_cutoff
 
 
-CEND      = '\33[0m'
-CRED    = '\33[31m'
-CYELLOW = '\33[33m'
+CEND        = '\33[0m'
+CRED        = '\33[1;31;40m'
+CYELLOW     = '\33[1;33;40m'
+CBLUE       = '\33[1;34;40m'
+CDARKGRAY   = '\33[1;30;40m'
+CLIGHTGRAY  = '\33[0;37;40m'
+
+
+def in_blue(str):
+    return CBLUE + str + CEND
+
+
+def in_lightgray(str):
+    return CLIGHTGRAY + str + CEND
+
+
+def in_darkgray(str):
+    return CDARKGRAY + str + CEND
+
+
+def in_red(str):
+    return CRED + str + CEND
+
+
+def in_yellow(str):
+    return CYELLOW + str + CEND
 
 
 def warn(str):
-  print(CYELLOW + str + CEND)
+  print(in_yellow(str))
 
 
 def error(str):
-  print(CRED + str + CEND)
+  print(in_red(str))
 
 
 if __name__ == "__main__":
@@ -109,7 +149,7 @@ if __name__ == "__main__":
 
   filemap = {filename: last_used_date(filename) for filename in files}
   old_filenames = [k for k,v in filemap.iteritems()
-                   if is_older_than(age=args.age,
+                   if is_older_than(cutoff_age=args.age,
                                     fn=(operator.lt if args.newer else operator.gt),
                                     verbose=args.verbose)(k, v)]
 
