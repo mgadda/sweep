@@ -8,9 +8,6 @@
 	<array>
 		<string>python</string>
 		<string>/absolute/path/to/sweep.py</string>
-    <string>--verbose</string>
-    <string>-a</string>
-    <string>7</string>
 		<string>~/Desktop</string>
 	</array>
 	<key>StartCalendarInterval</key>
