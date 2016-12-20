@@ -13,7 +13,8 @@ import dateutil.parser
 
 def last_used_date(filename):
   try:
-    mdls_result = subprocess.check_output(['mdls', '-name', 'kMDItemLastUsedDate', filename])
+    mdls_result = subprocess.check_output(
+      ['mdls', '-name', 'kMDItemLastUsedDate', filename])
     [_, date_str] = mdls_result.split(' = ')
     return dateutil.parser.parse(date_str)
   except:
@@ -21,15 +22,15 @@ def last_used_date(filename):
 
 
 def age_str(age):
-    if age is None or age == sys.maxint:
-        return "Never"
-    else:
-        return str(age)
+  if age is None or age == sys.maxint:
+    return "Never"
+  else:
+    return str(age)
 
 
 def age_in_days(filename, last_used):
   if last_used is None:
-    return sys.maxint # no timestamp => never accessed
+    return sys.maxint  # no timestamp => never accessed
 
   tz_info = last_used.tzinfo
 
@@ -40,47 +41,46 @@ def age_in_days(filename, last_used):
 
 
 def is_older_than(cutoff_age, fn=operator.gt, verbose=False):
-
   def past_cutoff(filename, last_used):
     age = age_in_days(filename, last_used)
     selected = fn(age, cutoff_age)
     if verbose:
-        if selected:
-            print in_blue(age_str(age) + "\t\t" + filename)
-        else:
-            print in_lightgray(age_str(age) + "\t\t" + filename)
+      if selected:
+        print in_blue(age_str(age) + "\t\t" + filename)
+      else:
+        print in_lightgray(age_str(age) + "\t\t" + filename)
 
     return selected
 
   return past_cutoff
 
 
-CEND        = '\33[0m'
-CRED        = '\33[1;31;40m'
-CYELLOW     = '\33[1;33;40m'
-CBLUE       = '\33[1;34;40m'
-CDARKGRAY   = '\33[1;30;40m'
-CLIGHTGRAY  = '\33[0;37;40m'
+CEND = '\33[0m'
+CRED = '\33[1;31;40m'
+CYELLOW = '\33[1;33;40m'
+CBLUE = '\33[1;34;40m'
+CDARKGRAY = '\33[1;30;40m'
+CLIGHTGRAY = '\33[0;37;40m'
 
 
 def in_blue(str):
-    return CBLUE + str + CEND
+  return CBLUE + str + CEND
 
 
 def in_lightgray(str):
-    return CLIGHTGRAY + str + CEND
+  return CLIGHTGRAY + str + CEND
 
 
 def in_darkgray(str):
-    return CDARKGRAY + str + CEND
+  return CDARKGRAY + str + CEND
 
 
 def in_red(str):
-    return CRED + str + CEND
+  return CRED + str + CEND
 
 
 def in_yellow(str):
-    return CYELLOW + str + CEND
+  return CYELLOW + str + CEND
 
 
 def warn(str):
@@ -108,8 +108,8 @@ if __name__ == "__main__":
                       help="the age in days after which a file is considered to be not recently used. default is 7 days",
                       type=int)
   verbose_action = parser.add_argument("-v", "--verbose",
-                      help="show age of files in columnar format",
-                      action='store_true')
+                                       help="show age of files in columnar format",
+                                       action='store_true')
   parser.add_argument("--newer",
                       help="invert the set of files to be swept to be files used more recently than cut off age",
                       action='store_true')
@@ -135,7 +135,8 @@ if __name__ == "__main__":
   else:
     output_dir = os.path.abspath(args.output_dir)
 
-  if output_dir == input_dir or (os.path.exists(output_dir) and os.path.samefile(input_dir, output_dir)):
+  if output_dir == input_dir or (
+    os.path.exists(output_dir) and os.path.samefile(input_dir, output_dir)):
     error("ERROR: Input and output directories cannot be the same.")
     exit(1)
 
@@ -145,12 +146,14 @@ if __name__ == "__main__":
     head = os.path.relpath(output_dir, common_ancestor).split('/')[0]
 
   files = [os.path.join(input_dir, file) for file in os.listdir(input_dir)
-           if not (head is not None and fnmatch(file, head) or fnmatch(file, ".DS_Store"))]
+           if not (
+    head is not None and fnmatch(file, head) or fnmatch(file, ".DS_Store"))]
 
   filemap = {filename: last_used_date(filename) for filename in files}
-  old_filenames = [k for k,v in filemap.iteritems()
+  old_filenames = [k for k, v in filemap.iteritems()
                    if is_older_than(cutoff_age=args.age,
-                                    fn=(operator.lt if args.newer else operator.gt),
+                                    fn=(
+                                    operator.lt if args.newer else operator.gt),
                                     verbose=args.verbose)(k, v)]
 
   for filename in old_filenames:
